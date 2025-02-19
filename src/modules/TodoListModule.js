@@ -19,6 +19,11 @@ class TodoListModule {
         }
     }
 
+    appendMainContent(projectName, todoItem) {
+        const todoItemBox = document.querySelector(".todo-item-box");
+        todoItemBox.appendChild(this.createTodoItemCard(projectName, todoItem));
+    }
+
     createTodoListSkeleton() {
         const mainContentWrapper = document.createElement("div");
         mainContentWrapper.classList.add("main-content-wrapper");
@@ -26,9 +31,22 @@ class TodoListModule {
         const todoCardBox = document.createElement("div");
         todoCardBox.classList.add("todo-item-box");
 
-        mainContentWrapper.appendChild(todoCardBox);
+        const newTodoItemBtn = this.createNewTodoItemButton();
 
+        mainContentWrapper.replaceChildren(todoCardBox, newTodoItemBtn);
         return mainContentWrapper;
+    }
+
+    createNewTodoItemButton() {
+        const newBtn = document.createElement("button");
+        newBtn.classList.add("new-todo-item-button");
+        newBtn.textContent = "+";
+
+        newBtn.addEventListener("click", () => {
+            mainPubSub.publish("newTodoItemBtnPressed");
+        });
+
+        return newBtn;
     }
 
     createTodoItemCard(projectName, todoItem) {

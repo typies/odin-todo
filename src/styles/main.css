@@ -66,10 +66,9 @@ header {
     border: none;
     height: 1em;
     width: 1em;
-}
-
-.new-project-button:active {
-    color: var(--ash-gray);
+    &:hover {
+        color: var(--ash-gray);
+    }
 }
 
 .sidebar-wrapper {
@@ -116,6 +115,26 @@ header {
 }
 
 /* Main content */
+
+.main-content-wrapper {
+    position: relative;
+}
+
+.new-todo-item-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 3em;
+    background-color: transparent;
+    color: var(--robin-egg-blue);
+    border-radius: 25%;
+    border: none;
+    height: 1em;
+    width: 1em;
+    &:hover {
+        color: var(--ash-gray);
+    }
+}
 
 .todo-item-box {
     padding: 40px;
