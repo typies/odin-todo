@@ -1,6 +1,15 @@
 :root {
-    --bg-clr: black;
-    --text-clr: white;
+    --bg-clr: var(--alabaster, white);
+    --text-clr: black;
+    --bittersweet: #ed6a5a;
+    --lemon-chiffon: #f4f1bb;
+    --ash-gray: #9bc1bc;
+    --alabaster: #e6ebe0;
+    --robin-egg-blue: #36c9c6;
+    --card-padding: 0;
+
+    --todo-item-bg-clr: var(--ash-gray, gray);
+    --sidebar-li-text-clr: var(black, gray);
 }
 
 * {
@@ -53,41 +62,62 @@ header {
 }
 
 .sidebar-title {
-    font-size: 24px;
+    font-size: 2rem;
 }
 
 .sidebar-box {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    border: 1px solid red;
     padding: 12px;
-    background-color: var(--sidebar-box-bg-clr, gray);
 }
 
 .sidebar-li {
     cursor: pointer;
-    border: 1px solid purple;
-    background-color: var(--sidebar-li-bg-clr, lightgray);
+    font-size: 1.4rem;
+    padding: 8px;
     color: var(--sidebar-li-text-clr, black);
 }
 
-.sidebar-li:hover {
+.sidebar-li:hover:not(.highlighted) {
     scale: 1.05;
+    color: var(--ash-gray);
+}
+
+.highlighted {
+    color: var(--robin-egg-blue);
 }
 
 /* Main content */
 
 .todo-item-box {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    padding: 20px;
+}
+
+.todo-item-card-wrapper {
+    position: relative;
 }
 
 .todo-item-card {
-    background: var(--todo-item-bg-clr, gray);
-    padding: 12px;
+    cursor: pointer;
+    padding: var(--card-padding, 0);
+    border: 1px solid transparent; /* Used to prevent jump when border appears*/
+    padding-left: 8px;
+}
+
+.todo-item-card:hover {
+    color: var(--ash-gray);
+}
+
+.todo-item-card:has(> .unhidden) {
+    border-left-color: var(--robin-egg-blue);
+}
+
+.hidden {
+    display: none;
 }
 
 .todo-item-title {
@@ -104,4 +134,18 @@ header {
 
 .todo-item-prio-high {
     color: red;
+}
+
+.completed-tick {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 0.5em;
+    left: -2em;
+    border: 1px solid black;
+    border-radius: 50%;
+}
+
+.completed-tick.ticked {
+    background-color: var(--ash-gray);
 }
