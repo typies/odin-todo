@@ -4,20 +4,32 @@ class TodoListModule {
     constructor() {
         mainPubSub.subscribe(
             "activeProjectChange",
-            this.populateMainContent.bind(this)
+            this.replaceMainContent.bind(this)
+        );
+        mainPubSub.subscribe(
+            "todoItemRefresh",
+            this.refreshTodoItem.bind(this)
         );
     }
 
-    // changeActiveProject(project) {
-    //     this.populateMainContent(project);
-    // }
+    refreshTodoItem(data) {
+        const itemToReplace = document.querySelector(
+            `[data-title='${data.todoItem.title}']`
+        );
 
-    populateMainContent(project) {
+        itemToReplace.replaceWith(
+            this.createTodoItemCard(data.projectName, data.todoItem)
+        );
+    }
+
+    replaceMainContent(project) {
         const todoItemBox = document.querySelector(".todo-item-box");
         todoItemBox.replaceChildren();
         // Create todo card for each todo
         for (const [key, value] of project.todoItems) {
-            todoItemBox.appendChild(this.createTodoItemCard(value));
+            todoItemBox.appendChild(
+                this.createTodoItemCard(project.projectName, value)
+            );
         }
     }
 
@@ -33,19 +45,20 @@ class TodoListModule {
         return mainContentWrapper;
     }
 
-    createTodoItemCard(todoItem) {
+    createTodoItemCard(projectName, todoItem) {
         const newCard = document.createElement("div");
         newCard.classList.add("todo-item-card");
 
         const title = this.createTextDiv(todoItem.title, "todo-item-title");
-        const desc = this.createTextDiv(todoItem.description, [
-            "todo-item-desc",
-            "hidden",
-        ]);
         const dueDate = this.createTextDiv(
             `Due: ${todoItem.dueDate}`,
             "todo-item-due"
         );
+
+        const desc = this.createTextDiv(todoItem.description, [
+            "todo-item-desc",
+            "hidden",
+        ]);
         const prio = this.createTextDiv(todoItem.priority, [
             `todo-item-prio-${todoItem.priority.toLowerCase()}`,
             "hidden",
@@ -61,7 +74,24 @@ class TodoListModule {
 
         newCard.replaceChildren(title, dueDate, desc, notes, prio);
 
-        return newCard;
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("todo-item-card-wrapper");
+        wrapper.setAttribute("data-title", todoItem.title);
+
+        const completedTick = this.createCompletedTick();
+        if (todoItem.completed) {
+            completedTick.classList.add("ticked");
+        }
+        completedTick.addEventListener("click", () => {
+            todoItem.completed = !todoItem.completed;
+            mainPubSub.publish("todoItemCompleteChange", {
+                projectName,
+                todoItem,
+            });
+        });
+        wrapper.replaceChildren(completedTick, newCard);
+
+        return wrapper;
     }
 
     toggleHiddenChildren(element) {

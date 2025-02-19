@@ -124,28 +124,22 @@ header {
     font-size: 2em;
 }
 
-.todo-item-prio-low {
-    color: blue;
-}
-
-.todo-item-prio-medium {
-    color: orange;
-}
-
-.todo-item-prio-high {
-    color: red;
-}
-
 .completed-tick {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    top: 0.5em;
-    left: -2em;
+    width: 1em;
+    height: 1em;
+    top: 0.75em;
+    left: -1.5em;
     border: 1px solid black;
     border-radius: 50%;
+    cursor: pointer;
+}
+
+.completed-tick:hover {
+    outline: solid 1px var(--ash-gray);
 }
 
 .completed-tick.ticked {
     background-color: var(--ash-gray);
+    border: none;
 }
