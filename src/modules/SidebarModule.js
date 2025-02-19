@@ -1,7 +1,12 @@
 import mainPubSub from "./PubSub";
 
 class SidebarModule {
-    constructor() {}
+    constructor() {
+        mainPubSub.subscribe(
+            "activeProjectChange",
+            this.changeActiveProject.bind(this)
+        );
+    }
 
     changeActiveProject(project) {
         const sidebarLis = document.querySelectorAll(".sidebar-li");
@@ -28,23 +33,40 @@ class SidebarModule {
         const sidebarList = document.createElement("ul");
         sidebarList.classList.add("sidebar-box");
 
-        wrapperDiv.replaceChildren(sidebarTitle, sidebarList);
+        const newProjectButton = this.createNewProjectButton();
+
+        wrapperDiv.replaceChildren(sidebarTitle, sidebarList, newProjectButton);
         return wrapperDiv;
     }
 
-    populateSidebar(projects) {
-        const sidebarBox = document.querySelector(".sidebar-box");
-        for (const project of projects) {
-            const sidebarLi = document.createElement("li");
-            sidebarLi.classList.add("sidebar-li");
-            sidebarLi.textContent = project.projectName;
+    createNewProjectButton() {
+        const newBtn = document.createElement("button");
+        newBtn.classList.add("new-project-button");
+        newBtn.textContent = "+";
 
-            sidebarLi.addEventListener("click", () => {
-                mainPubSub.publish("activeProjectChange", project);
-                this.changeActiveProject(project);
-            });
-            sidebarBox.appendChild(sidebarLi);
+        newBtn.addEventListener("click", () => {
+            mainPubSub.publish("newProjectBtnPressed");
+        });
+
+        return newBtn;
+    }
+
+    populateSidebar(projects) {
+        for (const project of projects) {
+            this.addNewSidebarItem(project);
         }
+    }
+
+    addNewSidebarItem(project) {
+        const sidebarBox = document.querySelector(".sidebar-box");
+        const sidebarLi = document.createElement("li");
+        sidebarLi.classList.add("sidebar-li");
+        sidebarLi.textContent = project.projectName;
+
+        sidebarLi.addEventListener("click", () => {
+            mainPubSub.publish("activeProjectChange", project);
+        });
+        sidebarBox.appendChild(sidebarLi);
     }
 }
 

@@ -10,6 +10,7 @@
 
     --todo-item-bg-clr: var(--ash-gray, gray);
     --sidebar-li-text-clr: var(black, gray);
+    --header-height: 100px;
 }
 
 * {
@@ -21,6 +22,7 @@
 body {
     background-color: var(--bg-clr, white);
     color: var(--text-clr, black);
+    position: relative;
 }
 
 ul,
@@ -30,14 +32,11 @@ li {
 
 button {
     cursor: pointer;
-    &:hover {
-        scale: 1.05;
-    }
 }
 
 /* Header */
 header {
-    height: 100px;
+    height: var(--header-height);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -50,15 +49,33 @@ header {
 #content {
     display: grid;
     grid:
-        "sidebar content" 1fr
+        "sidebar content" calc(100vh - var(--header-height))
         / 1fr 5fr;
 }
 
 /* Sidebar */
 
+.new-project-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 3em;
+    background-color: transparent;
+    color: var(--robin-egg-blue);
+    border-radius: 25%;
+    border: none;
+    height: 1em;
+    width: 1em;
+}
+
+.new-project-button:active {
+    color: var(--ash-gray);
+}
+
 .sidebar-wrapper {
     padding: 20px;
     border-right: 1px solid gray;
+    position: relative;
 }
 
 .sidebar-title {
@@ -152,4 +169,53 @@ header {
 .completed-tick.ticked {
     background-color: var(--ash-gray);
     border: none;
+}
+
+/* Pop up form */
+.pop-up-form-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pop-up-box {
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    width: 320px;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-input {
+    display: block;
+}
+
+.form-btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+.form-btn-group > input[type="button"],
+.form-btn-group > input[type="submit"] {
+    cursor: pointer;
+    border-radius: 20px;
+    padding: 8px 12px;
+    background-color: var(--ash-gray);
+    &:hover {
+        background-color: var(--robin-egg-blue);
+    }
 }
