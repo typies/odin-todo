@@ -6,7 +6,7 @@ class HomePage {
     constructor() {
         this.projects = [];
         mainPubSub.subscribe(
-            "todoItemCompleteChange",
+            "todoItemCompletionChange",
             this.updateTodoItem.bind(this)
         );
     }
@@ -19,8 +19,7 @@ class HomePage {
             (project) => project.projectName == data.projectName
         );
 
-        matchingProject.todoItems.set(data.todoItem.title, data.todoItem);
-        mainPubSub.publish("todoItemRefresh", data);
+        matchingProject.toggleTodoItemStatus(data.todoItem.title);
     }
 
     render() {
@@ -29,8 +28,6 @@ class HomePage {
             TodoListModule.createTodoListSkeleton()
         );
         SidebarModule.populateSidebar(this.projects);
-
-        mainPubSub.publish("activeProjectChange", this.projects[0]);
     }
 }
 

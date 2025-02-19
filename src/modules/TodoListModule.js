@@ -6,20 +6,6 @@ class TodoListModule {
             "activeProjectChange",
             this.replaceMainContent.bind(this)
         );
-        mainPubSub.subscribe(
-            "todoItemRefresh",
-            this.refreshTodoItem.bind(this)
-        );
-    }
-
-    refreshTodoItem(data) {
-        const itemToReplace = document.querySelector(
-            `[data-title='${data.todoItem.title}']`
-        );
-
-        itemToReplace.replaceWith(
-            this.createTodoItemCard(data.projectName, data.todoItem)
-        );
     }
 
     replaceMainContent(project) {
@@ -55,60 +41,38 @@ class TodoListModule {
             "todo-item-due"
         );
 
-        const desc = this.createTextDiv(todoItem.description, [
-            "todo-item-desc",
-            "hidden",
-        ]);
-        const prio = this.createTextDiv(todoItem.priority, [
-            `todo-item-prio-${todoItem.priority.toLowerCase()}`,
-            "hidden",
-        ]);
-        const notes = this.createTextDiv(todoItem.notes, [
-            "todo-item-notes",
-            "hidden",
-        ]);
+        const desc = this.createHiddenTextDiv(todoItem.description);
+        const prio = this.createHiddenTextDiv(todoItem.priority);
+        const notes = this.createHiddenTextDiv(todoItem.notes);
 
-        newCard.addEventListener("click", () =>
-            this.toggleHiddenChildren(newCard)
-        );
+        newCard.addEventListener("click", () => {
+            for (const e of [desc, prio, notes]) {
+                e.classList.toggle("hidden");
+            }
+        });
 
         newCard.replaceChildren(title, dueDate, desc, notes, prio);
 
         const wrapper = document.createElement("div");
         wrapper.classList.add("todo-item-card-wrapper");
-        wrapper.setAttribute("data-title", todoItem.title);
 
         const completedTick = this.createCompletedTick();
         if (todoItem.completed) {
             completedTick.classList.add("ticked");
         }
         completedTick.addEventListener("click", () => {
-            todoItem.completed = !todoItem.completed;
-            mainPubSub.publish("todoItemCompleteChange", {
+            mainPubSub.publish("todoItemCompletionChange", {
                 projectName,
                 todoItem,
             });
+            wrapper.replaceWith(this.createTodoItemCard(projectName, todoItem));
         });
         wrapper.replaceChildren(completedTick, newCard);
 
         return wrapper;
     }
 
-    toggleHiddenChildren(element) {
-        const hidden = element.querySelectorAll(".hidden");
-        const unhidden = element.querySelectorAll(".unhidden");
-        for (const hiddenEle of hidden) {
-            // Show hidden elements
-            hiddenEle.classList.remove("hidden");
-            hiddenEle.classList.add("unhidden");
-        }
-        for (const unhiddenEle of unhidden) {
-            unhiddenEle.classList.remove("unhidden");
-            unhiddenEle.classList.add("hidden");
-        }
-    }
-
-    createTextDiv(text, classList) {
+    createTextDiv(text, classList = []) {
         // Classlist works for both strings and array's of strings
         const newDiv = document.createElement("div");
         if (!(classList instanceof Array)) {
@@ -119,18 +83,17 @@ class TodoListModule {
         return newDiv;
     }
 
+    createHiddenTextDiv(text, classList = []) {
+        classList.push("hidden");
+        return this.createTextDiv(text, classList);
+    }
+
     createCompletedTick() {
         const completedTick = document.createElement("div");
         completedTick.classList.add("completed-tick");
 
         completedTick.addEventListener("click", () => {
-            if (completedTick.classList.contains("ticked")) {
-                completedTick.classList.remove("ticked");
-                return false;
-            } else {
-                completedTick.classList.add("ticked");
-                return true;
-            }
+            completedTick.classList.toggle("ticked");
         });
 
         return completedTick;

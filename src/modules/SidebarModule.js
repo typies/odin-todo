@@ -1,9 +1,7 @@
 import mainPubSub from "./PubSub";
 
 class SidebarModule {
-    constructor() {
-        mainPubSub.subscribe("activeProjectChange", this.changeActiveProject);
-    }
+    constructor() {}
 
     changeActiveProject(project) {
         const sidebarLis = document.querySelectorAll(".sidebar-li");
@@ -12,11 +10,11 @@ class SidebarModule {
         );
         if (highlightedElement)
             highlightedElement.classList.remove("highlighted");
-        const temp = Array.from(sidebarLis).filter(
+        const newActiveLi = Array.from(sidebarLis).find(
             (li) => li.textContent == project.projectName
         );
 
-        temp[0].classList.add("highlighted");
+        newActiveLi.classList.add("highlighted");
     }
 
     createSidebarSkeleton() {
@@ -41,22 +39,9 @@ class SidebarModule {
             sidebarLi.classList.add("sidebar-li");
             sidebarLi.textContent = project.projectName;
 
-            // Mouse over
-            if (sidebarLi.textContent.length > 28) {
-                const fullText = sidebarLi.textContent;
-                const shortText =
-                    sidebarLi.textContent.substring(0, 22) + "...";
-                sidebarLi.addEventListener("mouseenter", () => {
-                    sidebarLi.textContent = fullText;
-                });
-                sidebarLi.addEventListener("mouseleave", () => {
-                    sidebarLi.textContent = shortText;
-                });
-                sidebarLi.textContent = shortText;
-            }
-
             sidebarLi.addEventListener("click", () => {
                 mainPubSub.publish("activeProjectChange", project);
+                this.changeActiveProject(project);
             });
             sidebarBox.appendChild(sidebarLi);
         }
