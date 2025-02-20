@@ -1,6 +1,6 @@
 import "./styles/main.css";
-import Project from "./modules/Project.js";
 import HomePage from "./modules/HomePage.js";
+import PageProjectsManager from "./modules/PageProjectsManager.js";
 
 const defaultHouseCareList = [
     {
@@ -37,16 +37,13 @@ const defaultShoppingList = [
     },
 ];
 
-const defaultProject = new Project("House care");
+PageProjectsManager.addNewProject("House Care");
+PageProjectsManager.addTodoItems("House Care", defaultHouseCareList);
 
-defaultProject.addTodoItems(defaultHouseCareList);
+PageProjectsManager.addNewProject("Holiday Shopping project long name");
+PageProjectsManager.addTodoItems(
+    "Holiday Shopping project long name",
+    defaultShoppingList
+);
 
-defaultProject.toggleTodoItemStatus("Clean Gutters");
-
-const defaultSecondProject = new Project("Holiday shopping project long name");
-
-defaultSecondProject.addTodoItems(defaultShoppingList);
-
-HomePage.projects.push(defaultProject);
-HomePage.projects.push(defaultSecondProject);
 HomePage.render();

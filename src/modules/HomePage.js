@@ -2,15 +2,10 @@ import SidebarModule from "./SidebarModule";
 import mainPubSub from "./PubSub";
 import TodoListModule from "./TodoListModule";
 import PopUpFormFactory from "./PopUpFormFactory.js";
-import Project from "./Project";
+import PageProjectsManager from "./PageProjectsManager.js";
 
 class HomePage {
     constructor() {
-        this.projects = [];
-        mainPubSub.subscribe(
-            "todoItemCompletionChange",
-            this.updateTodoItem.bind(this)
-        );
         mainPubSub.subscribe(
             "newProjectBtnPressed",
             this.openNewProjectPopUp.bind(this)
@@ -28,8 +23,8 @@ class HomePage {
         content: document.querySelector("#content"),
     };
 
-    setActiveProject(project) {
-        this.activeProject = project;
+    setActiveProject(projectName) {
+        this.activeProjectName = projectName;
     }
 
     openNewProjectPopUp() {
@@ -46,17 +41,19 @@ class HomePage {
         ];
         const newProjectPopUp =
             PopUpFormFactory.createPopUp(newProjectFormInputs);
-        this.configureProjectSubmitButton(newProjectPopUp);
+        this.configureNewProjectSubmitButton(newProjectPopUp);
         document.body.appendChild(newProjectPopUp);
     }
 
-    configureProjectSubmitButton(newPopUp) {
+    configureNewProjectSubmitButton(newPopUp) {
         newPopUp.addEventListener("submit", (event) => {
             event.preventDefault();
             const formData = new FormData(newPopUp.querySelector("form"));
-            const newProject = this.addNewProject(formData.get("project-name"));
+            const newProjectName = formData.get("project-name");
+            PageProjectsManager.addNewProject(newProjectName);
+            SidebarModule.addNewSidebarItem(newProjectName);
+            mainPubSub.publish("activeProjectChange", newProjectName);
             newPopUp.remove();
-            mainPubSub.publish("activeProjectChange", newProject);
         });
     }
 
@@ -136,7 +133,7 @@ class HomePage {
         newPopUp.addEventListener("submit", (event) => {
             event.preventDefault();
             const formData = new FormData(newPopUp.querySelector("form"));
-            const todoItem = {
+            const todoItemData = {
                 title: formData.get("title"),
                 description: formData.get("description"),
                 dueDate: formData.get("date"),
@@ -145,31 +142,25 @@ class HomePage {
                 checkList: formData.get("checkList"),
                 completed: formData.get("completed"),
             };
-            if (!this.activeProject) {
-                if (this.projects.length == 0) {
-                    addNewProject("Default");
+            if (!this.activeProjectName) {
+                if (PageProjectsManager.sharedProjectList.length == 0) {
+                    PageProjectsManager.addNewProject("Default");
                 }
-                this.activeProject = this.projects[0];
+                this.activeProjectName = PageProjectsManager.sharedProjectList
+                    .keys()
+                    .next().value;
+                mainPubSub.publish(
+                    "activeProjectChange",
+                    this.activeProjectName
+                );
             }
-            this.activeProject.todoItems.set(todoItem.title, todoItem);
-            mainPubSub.publish("activeProjectChange", this.activeProject);
+            PageProjectsManager.addTodoItem(
+                this.activeProjectName,
+                todoItemData
+            );
+            TodoListModule.appendLatestToMainContent(this.activeProjectName);
             newPopUp.remove();
         });
-    }
-
-    addNewProject(projectName) {
-        const newProject = new Project(projectName);
-        this.projects.push(newProject);
-        SidebarModule.addNewSidebarItem(newProject);
-        return newProject;
-    }
-
-    updateTodoItem(data) {
-        const matchingProject = this.projects.find(
-            (project) => project.projectName == data.projectName
-        );
-
-        matchingProject.toggleTodoItemStatus(data.todoItem.title);
     }
 
     render() {
@@ -177,7 +168,7 @@ class HomePage {
             SidebarModule.createSidebarSkeleton(),
             TodoListModule.createTodoListSkeleton()
         );
-        SidebarModule.populateSidebar(this.projects);
+        SidebarModule.populateSidebar();
     }
 }
 

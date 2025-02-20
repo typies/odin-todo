@@ -104,10 +104,10 @@ header {
     color: var(--ash-gray);
 }
 
-.sidebar-li:hover {
+.sidebar-li.highlighted {
     white-space: wrap;
     text-overflow: ellipsis;
-    max-width: 22ch;
+    max-width: 25ch;
 }
 
 .highlighted {

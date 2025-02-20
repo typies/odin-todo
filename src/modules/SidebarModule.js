@@ -1,3 +1,4 @@
+import PageProjectsManager from "./PageProjectsManager";
 import mainPubSub from "./PubSub";
 
 class SidebarModule {
@@ -8,7 +9,7 @@ class SidebarModule {
         );
     }
 
-    changeActiveProject(project) {
+    changeActiveProject(projectName) {
         const sidebarLis = document.querySelectorAll(".sidebar-li");
         const highlightedElement = document.querySelector(
             ".sidebar-li.highlighted"
@@ -16,7 +17,7 @@ class SidebarModule {
         if (highlightedElement)
             highlightedElement.classList.remove("highlighted");
         const newActiveLi = Array.from(sidebarLis).find(
-            (li) => li.textContent == project.projectName
+            (li) => li.textContent == projectName
         );
 
         newActiveLi.classList.add("highlighted");
@@ -51,20 +52,20 @@ class SidebarModule {
         return newBtn;
     }
 
-    populateSidebar(projects) {
-        for (const project of projects) {
-            this.addNewSidebarItem(project);
+    populateSidebar() {
+        for (const projectName of PageProjectsManager.sharedProjectList.keys()) {
+            this.addNewSidebarItem(projectName);
         }
     }
 
-    addNewSidebarItem(project) {
+    addNewSidebarItem(projectName) {
         const sidebarBox = document.querySelector(".sidebar-box");
         const sidebarLi = document.createElement("li");
         sidebarLi.classList.add("sidebar-li");
-        sidebarLi.textContent = project.projectName;
+        sidebarLi.textContent = projectName;
 
         sidebarLi.addEventListener("click", () => {
-            mainPubSub.publish("activeProjectChange", project);
+            mainPubSub.publish("activeProjectChange", projectName);
         });
         sidebarBox.appendChild(sidebarLi);
     }

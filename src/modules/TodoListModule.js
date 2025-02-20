@@ -1,3 +1,4 @@
+import PageProjectsManager from "./PageProjectsManager";
 import mainPubSub from "./PubSub";
 
 class TodoListModule {
@@ -8,20 +9,25 @@ class TodoListModule {
         );
     }
 
-    replaceMainContent(project) {
+    replaceMainContent(projectName) {
         const todoItemBox = document.querySelector(".todo-item-box");
         todoItemBox.replaceChildren();
         // Create todo card for each todo
-        for (const [key, value] of project.todoItems) {
+        for (const todoItems of PageProjectsManager.getProject(projectName)) {
             todoItemBox.appendChild(
-                this.createTodoItemCard(project.projectName, value)
+                this.createTodoItemCard(projectName, todoItems)
             );
         }
     }
 
-    appendMainContent(projectName, todoItem) {
+    appendLatestToMainContent(projectName) {
         const todoItemBox = document.querySelector(".todo-item-box");
-        todoItemBox.appendChild(this.createTodoItemCard(projectName, todoItem));
+        todoItemBox.appendChild(
+            this.createTodoItemCard(
+                projectName,
+                PageProjectsManager.getProject(projectName).slice(-1)[0]
+            )
+        );
     }
 
     createTodoListSkeleton() {
@@ -50,6 +56,9 @@ class TodoListModule {
     }
 
     createTodoItemCard(projectName, todoItem) {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("todo-item-card-wrapper");
+
         const newCard = document.createElement("div");
         newCard.classList.add("todo-item-card");
 
@@ -71,19 +80,16 @@ class TodoListModule {
 
         newCard.replaceChildren(title, dueDate, desc, notes, prio);
 
-        const wrapper = document.createElement("div");
-        wrapper.classList.add("todo-item-card-wrapper");
-
         const completedTick = this.createCompletedTick();
         if (todoItem.completed) {
             completedTick.classList.add("ticked");
         }
         completedTick.addEventListener("click", () => {
-            mainPubSub.publish("todoItemCompletionChange", {
+            const temp = PageProjectsManager.getTodoItem(
                 projectName,
-                todoItem,
-            });
-            wrapper.replaceWith(this.createTodoItemCard(projectName, todoItem));
+                todoItem.title
+            );
+            temp.completed = !todoItem.completed;
         });
         wrapper.replaceChildren(completedTick, newCard);
 
