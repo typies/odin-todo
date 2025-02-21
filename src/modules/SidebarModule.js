@@ -1,5 +1,6 @@
 import PageProjectsManager from "./PageProjectsManager";
 import mainPubSub from "./PubSub";
+import trashSvg from "../images/trash.svg";
 
 class SidebarModule {
     constructor() {
@@ -17,7 +18,7 @@ class SidebarModule {
         if (highlightedElement)
             highlightedElement.classList.remove("highlighted");
         const newActiveLi = Array.from(sidebarLis).find(
-            (li) => li.textContent == projectName
+            (li) => li.querySelector("div").textContent == projectName
         );
 
         newActiveLi.classList.add("highlighted");
@@ -62,9 +63,25 @@ class SidebarModule {
         const sidebarBox = document.querySelector(".sidebar-box");
         const sidebarLi = document.createElement("li");
         sidebarLi.classList.add("sidebar-li");
-        sidebarLi.textContent = projectName;
 
-        sidebarLi.addEventListener("click", () => {
+        const sidebarDelete = document.createElement("img");
+        sidebarDelete.classList.add("delete-svg", "hidden");
+        sidebarDelete.src = trashSvg;
+        sidebarLi.addEventListener("mouseenter", () => {
+            sidebarDelete.classList.remove("hidden");
+        });
+        sidebarLi.addEventListener("mouseleave", () => {
+            sidebarDelete.classList.add("hidden");
+        });
+        sidebarDelete.addEventListener("click", () => {
+            sidebarLi.remove();
+        });
+
+        const sidebarLiText = document.createElement("div");
+        sidebarLiText.textContent = projectName;
+        sidebarLi.replaceChildren(sidebarDelete, sidebarLiText);
+
+        sidebarLiText.addEventListener("click", () => {
             mainPubSub.publish("activeProjectChange", projectName);
         });
         sidebarBox.appendChild(sidebarLi);

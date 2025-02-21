@@ -99,17 +99,25 @@ header {
     font-size: 1.4rem;
     padding: 8px;
     color: var(--sidebar-li-text-clr, black);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     max-width: 15ch;
     font-family: var(--caveat-font);
     font-weight: 800;
     font-size: 2rem;
+    display: flex;
+}
+
+.sidebar-li > div {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+}
+
+img.delete-svg:hover {
+    filter: drop-shadow(0 0 2px #ed6a5a);
 }
 
 .sidebar-li:hover:not(.highlighted) {
-    scale: 1.05;
     color: var(--ash-gray);
 }
 
@@ -308,4 +316,8 @@ input[type="date"] {
 
 .prio-high {
     color: red;
+}
+
+.delete-svg {
+    width: 1em;
 }
