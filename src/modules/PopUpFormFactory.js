@@ -1,10 +1,6 @@
 export default class PopUpFormFactory {
-    static createPopUp(formInputs) {
-        const popUpFormContainer = document.createElement("div");
-        popUpFormContainer.classList.add("pop-up-form-container");
-
-        const popUpBox = document.createElement("div");
-        popUpBox.classList.add("pop-up-box");
+    static createPopUp(title, formInputs) {
+        const popUpFormContainer = this.createPopUpSkeleton(title);
         const newForm = this.createForm(formInputs);
 
         const cancelBtn = newForm.querySelector(
@@ -12,7 +8,23 @@ export default class PopUpFormFactory {
         );
         cancelBtn.addEventListener("click", () => popUpFormContainer.remove());
 
-        popUpBox.appendChild(newForm);
+        popUpFormContainer.querySelector(".pop-up-box").appendChild(newForm);
+
+        return popUpFormContainer;
+    }
+
+    static createPopUpSkeleton(title) {
+        const popUpFormContainer = document.createElement("div");
+        popUpFormContainer.classList.add("pop-up-bg");
+
+        const popUpBox = document.createElement("div");
+        popUpBox.classList.add("pop-up-box");
+
+        const popUpTitle = document.createElement("div");
+        popUpTitle.classList.add("pop-up-title");
+        popUpTitle.textContent = title;
+
+        popUpBox.appendChild(popUpTitle);
         popUpFormContainer.appendChild(popUpBox);
 
         return popUpFormContainer;
@@ -24,7 +36,6 @@ export default class PopUpFormFactory {
         for (const field of formInputs) {
             const fieldLabel = document.createElement("label");
             fieldLabel.textContent = field.labelText;
-            if (field.labelClass) fieldLabel.classList.add(field.labelClass);
             if (field.id) fieldLabel.setAttribute("for", field.id);
 
             const fieldInput = document.createElement(field.elementType);
@@ -57,5 +68,221 @@ export default class PopUpFormFactory {
         form.appendChild(btnGroup);
 
         return form;
+    }
+
+    static createNewPopUp(newForm) {
+        const popUpFormContainer = this.createPopUpSkeleton(
+            "Create New Todo Item"
+        );
+
+        const cancelBtn = newForm.querySelector(
+            'input[type="button"][value="Cancel"]'
+        );
+        cancelBtn.addEventListener("click", () => popUpFormContainer.remove());
+
+        popUpFormContainer.querySelector(".pop-up-box").appendChild(newForm);
+
+        return popUpFormContainer;
+    }
+
+    static createNewProjectPopUp() {
+        return this.createNewPopUp(this.createNewProjectForm());
+    }
+
+    static createNewTodoItemPopUp() {
+        return this.createNewPopUp(this.createNewTodoItemForm());
+    }
+
+    static createNewForm(listOfFormInputs) {
+        const form = document.createElement("form");
+        form.classList.add("form-container");
+
+        for (const formInput of listOfFormInputs) {
+            form.append(formInput.createFormItem());
+        }
+
+        const btnGroup = document.createElement("div");
+        btnGroup.classList.add("form-btn-group");
+
+        const cancelBtn = document.createElement("input");
+        cancelBtn.setAttribute("type", "button");
+        cancelBtn.setAttribute("value", "Cancel");
+
+        const submitBtn = document.createElement("input");
+        submitBtn.setAttribute("type", "submit");
+        submitBtn.setAttribute("value", "Create");
+        submitBtn.textContent = "Create";
+
+        btnGroup.appendChild(cancelBtn);
+        btnGroup.appendChild(submitBtn);
+        form.appendChild(btnGroup);
+
+        return form;
+    }
+
+    static createNewProjectForm() {
+        return this.createNewForm([
+            new TextFormItem({
+                labelText: "Project Name",
+                id: "project-name",
+                name: "project-name",
+                required: true,
+            }),
+        ]);
+    }
+
+    static createNewTodoItemForm() {
+        return this.createNewForm([
+            new TextFormItem({
+                labelText: "Todo Title",
+                id: "todo-title",
+                name: "title",
+                required: true,
+            }),
+            new TextFormItem({
+                labelText: "Description",
+                id: "description",
+                name: "description",
+                required: false,
+            }),
+            new DateFormItem({
+                labelText: "Due Date",
+                id: "due-date",
+                name: "date",
+                required: true,
+            }),
+            new RadioFormItemWrapper("Priority", [
+                new RadioFormItem({
+                    labelText: "Low",
+                    id: "low-priority",
+                    name: "priority",
+                    value: "Low",
+                    required: false,
+                }),
+                new RadioFormItem({
+                    labelText: "Medium",
+                    id: "med-priority",
+                    name: "priority",
+                    value: "Medium",
+                    required: false,
+                }),
+                new RadioFormItem({
+                    labelText: "High",
+                    id: "high-priority",
+                    name: "priority",
+                    value: "High",
+                    required: false,
+                }),
+            ]),
+            new CheckboxFormItem({
+                labelText: "Completed?",
+                id: "completed",
+                name: "completed",
+                required: false,
+            }),
+        ]);
+    }
+}
+
+class FormItem {
+    constructor(itemData) {
+        this.labelText = itemData.labelText;
+        this.id = itemData.id;
+        this.name = itemData.name;
+        this.required = itemData.required || false;
+    }
+
+    createFormItemSkeleton() {
+        const itemWrapper = document.createElement("div");
+        itemWrapper.classList.add("form-item-wrapper");
+
+        const fieldLabel = document.createElement("label");
+        fieldLabel.textContent = this.labelText;
+        fieldLabel.setAttribute("for", this.id);
+
+        itemWrapper.appendChild(fieldLabel);
+        return itemWrapper;
+    }
+
+    createFormItem() {
+        const itemWrapper = this.createFormItemSkeleton();
+
+        const fieldInput = document.createElement(this.htmlElementType);
+        fieldInput.setAttribute("id", this.id);
+        fieldInput.setAttribute("name", this.name);
+        fieldInput.setAttribute("type", this.type);
+        if (this.placeholder)
+            fieldInput.setAttribute("placeholder", this.placeholder);
+        if (this.required) fieldInput.setAttribute("required", true);
+        if (this.value) fieldInput.setAttribute("value", this.value);
+
+        itemWrapper.appendChild(fieldInput);
+        return itemWrapper;
+    }
+}
+
+class TextFormItem extends FormItem {
+    constructor(itemData) {
+        super(itemData);
+        this.htmlElementType = "input";
+        this.type = "text";
+        this.placeHolder = itemData.placeHolder;
+    }
+}
+
+class CheckboxFormItem extends FormItem {
+    constructor(itemData) {
+        super(itemData);
+        this.htmlElementType = "input";
+        this.type = "checkbox";
+        this.placeHolder = itemData.placeHolder;
+    }
+}
+
+class DateFormItem extends FormItem {
+    constructor(itemData) {
+        super(itemData);
+        this.htmlElementType = "input";
+        this.type = "date";
+        this.placeHolder = itemData.placeHolder;
+    }
+}
+
+class RadioFormItem extends FormItem {
+    constructor(itemData) {
+        super(itemData);
+        this.htmlElementType = "input";
+        this.type = "radio";
+        this.placeHolder = itemData.placeHolder;
+        this.value = itemData.value;
+    }
+}
+
+class RadioFormItemWrapper {
+    constructor(wrapperName, listOfRadioFormItems) {
+        this.wrapperName = wrapperName;
+        this.radioFormItems = listOfRadioFormItems;
+    }
+
+    createFormItemSkeleton() {
+        const itemWrapper = document.createElement("div");
+        itemWrapper.classList.add("form-item-wrapper");
+
+        const radioGroupTitle = document.createElement("div");
+        radioGroupTitle.classList.add("radio-group-title");
+        radioGroupTitle.textContent = this.wrapperName;
+
+        itemWrapper.appendChild(radioGroupTitle);
+        return itemWrapper;
+    }
+
+    createFormItem() {
+        const itemWrapper = this.createFormItemSkeleton();
+
+        for (const radioFormItem of this.radioFormItems) {
+            itemWrapper.appendChild(radioFormItem.createFormItem());
+        }
+
+        return itemWrapper;
     }
 }

@@ -212,7 +212,7 @@ header {
 }
 
 /* Pop up form */
-.pop-up-form-container {
+.pop-up-bg {
     position: fixed;
     top: 0;
     left: 0;
@@ -233,10 +233,19 @@ header {
     width: 320px;
 }
 
+.pop-up-title {
+    text-align: center;
+    font-size: 1.4rem;
+    padding-bottom: 1.4rem;
+    font-weight: 600;
+}
+
 .form-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: start;
+    place-self: center;
+    width: 80%;
     gap: 8px;
 }
 
@@ -245,6 +254,7 @@ header {
 }
 
 .form-btn-group {
+    padding-top: 1.5rem;
     display: flex;
     gap: 10px;
 }
@@ -254,8 +264,48 @@ header {
     cursor: pointer;
     border-radius: 20px;
     padding: 8px 12px;
-    background-color: var(--ash-gray);
-    &:hover {
-        background-color: var(--robin-egg-blue);
+    background-color: var(--robin-egg-blue);
+    &[value="Cancel"] {
+        background-color: var(--bittersweet);
     }
+    &:hover {
+        background-color: var(--ash-gray);
+    }
+}
+
+input[type="text"],
+input[type="date"] {
+    display: block;
+}
+
+.form-item-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-item-wrapper:has(> input[type="radio"]) {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.form-item-wrapper:has(> input[type="checkbox"]) {
+    flex-direction: row;
+}
+
+.radio-group-title {
+    font-size: 1.5rem;
+    text-decoration: underline;
+}
+
+.prio-low {
+    color: blue;
+}
+
+.prio-medium {
+    color: orange;
+}
+
+.prio-high {
+    color: red;
 }

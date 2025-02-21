@@ -69,7 +69,9 @@ class TodoListModule {
         );
 
         const desc = this.createHiddenTextDiv(todoItem.description);
-        const prio = this.createHiddenTextDiv(todoItem.priority);
+        const prio = this.createHiddenTextDiv(todoItem.priority, [
+            `prio-${todoItem.priority.toLowerCase()}`,
+        ]);
         const notes = this.createHiddenTextDiv(todoItem.notes);
 
         newCard.addEventListener("click", () => {

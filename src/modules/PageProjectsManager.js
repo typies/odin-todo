@@ -39,14 +39,22 @@ class PageProjectsManager {
 }
 
 class TodoItem {
-    constructor(title, description, dueDate, priority, notes, checkList) {
+    constructor(
+        title,
+        description,
+        dueDate,
+        priority,
+        notes,
+        checkList,
+        completed = false
+    ) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.priority = priority;
         this.notes = notes;
         this.checkList = checkList;
-        this.completed = false;
+        this.completed = completed;
     }
 }
 

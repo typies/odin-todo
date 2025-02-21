@@ -28,19 +28,7 @@ class HomePage {
     }
 
     openNewProjectPopUp() {
-        const newProjectFormInputs = [
-            {
-                labelText: "Project Name",
-                id: "project-name",
-                elementType: "input",
-                type: "text",
-                class: "form-input",
-                name: "project-name",
-                required: true,
-            },
-        ];
-        const newProjectPopUp =
-            PopUpFormFactory.createPopUp(newProjectFormInputs);
+        const newProjectPopUp = PopUpFormFactory.createNewProjectPopUp();
         this.configureNewProjectSubmitButton(newProjectPopUp);
         document.body.appendChild(newProjectPopUp);
     }
@@ -104,15 +92,6 @@ class HomePage {
                 name: "notes",
                 required: false,
             },
-            // {
-            //     labelText: "CheckList",
-            //     id: "title",
-            //     elementType: "input",
-            //     type: "text",
-            //     class: "title-input",
-            //     name: "title",
-            //     required: true,
-            // },
             {
                 labelText: "Completed",
                 id: "completed",
@@ -123,8 +102,7 @@ class HomePage {
                 required: false,
             },
         ];
-        const newProjectPopUp =
-            PopUpFormFactory.createPopUp(newProjectFormInputs);
+        const newProjectPopUp = PopUpFormFactory.createNewTodoItemPopUp();
         this.configureTodoItemSubmitButton(newProjectPopUp);
         document.body.appendChild(newProjectPopUp);
     }
@@ -140,7 +118,7 @@ class HomePage {
                 priority: formData.get("priority"),
                 notes: formData.get("notes"),
                 checkList: formData.get("checkList"),
-                completed: formData.get("completed"),
+                completed: formData.get("completed") == "on",
             };
             if (!this.activeProjectName) {
                 if (PageProjectsManager.sharedProjectList.length == 0) {
