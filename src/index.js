@@ -6,14 +6,14 @@ const defaultHouseCareList = [
     {
         title: "Clean Gutters",
         description: "Clean out the gutters around the house",
-        dueDate: "Monday",
+        date: "2025-02-21",
         priority: "Low",
         checkList: ["Upper gutters", "Lower gutters"],
     },
     {
         title: "Mow Lawn",
         description: "Mow the front and back lawn. Don't forget edgework",
-        dueDate: "Sunday",
+        date: "2026-02-24",
         priority: "Medium",
         checkList: ["Upper gutters", "Lower gutters"],
         notes: "Batteries will need to be charged ahead of time",
@@ -32,7 +32,7 @@ const defaultShoppingList = [
     {
         title: "Marianna",
         description: "Shop for Marianna",
-        dueDate: "Christmas",
+        date: "2025-12-20",
         priority: "High",
     },
 ];
@@ -45,5 +45,4 @@ PageProjectsManager.addTodoItems(
     "Holiday Shopping project long name",
     defaultShoppingList
 );
-
 HomePage.render();

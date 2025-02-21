@@ -70,10 +70,8 @@ export default class PopUpFormFactory {
         return form;
     }
 
-    static createNewPopUp(newForm) {
-        const popUpFormContainer = this.createPopUpSkeleton(
-            "Create New Todo Item"
-        );
+    static createNewPopUp(popUpTitle, newForm) {
+        const popUpFormContainer = this.createPopUpSkeleton(popUpTitle);
 
         const cancelBtn = newForm.querySelector(
             'input[type="button"][value="Cancel"]'
@@ -86,11 +84,21 @@ export default class PopUpFormFactory {
     }
 
     static createNewProjectPopUp() {
-        return this.createNewPopUp(this.createNewProjectForm());
+        return this.createNewPopUp("New Project", this.createNewProjectForm());
     }
 
     static createNewTodoItemPopUp() {
-        return this.createNewPopUp(this.createNewTodoItemForm());
+        return this.createNewPopUp(
+            "Create New Todo Item",
+            this.createNewTodoItemForm()
+        );
+    }
+
+    static createEditTodoItemPopUp(existingTodoItem) {
+        return this.createNewPopUp(
+            "Edit Todo Item",
+            this.createNewTodoItemForm(existingTodoItem)
+        );
     }
 
     static createNewForm(listOfFormInputs) {
@@ -131,25 +139,28 @@ export default class PopUpFormFactory {
         ]);
     }
 
-    static createNewTodoItemForm() {
+    static createNewTodoItemForm(existingValues = {}) {
         return this.createNewForm([
             new TextFormItem({
                 labelText: "Todo Title",
                 id: "todo-title",
                 name: "title",
                 required: true,
+                value: existingValues.title,
             }),
             new TextFormItem({
                 labelText: "Description",
                 id: "description",
                 name: "description",
                 required: false,
+                value: existingValues.description,
             }),
             new DateFormItem({
                 labelText: "Due Date",
                 id: "due-date",
                 name: "date",
                 required: true,
+                value: existingValues.date,
             }),
             new RadioFormItemWrapper("Priority", [
                 new RadioFormItem({
@@ -158,6 +169,7 @@ export default class PopUpFormFactory {
                     name: "priority",
                     value: "Low",
                     required: false,
+                    checked: existingValues.priority == "Low",
                 }),
                 new RadioFormItem({
                     labelText: "Medium",
@@ -165,6 +177,7 @@ export default class PopUpFormFactory {
                     name: "priority",
                     value: "Medium",
                     required: false,
+                    checked: existingValues.priority == "Medium",
                 }),
                 new RadioFormItem({
                     labelText: "High",
@@ -172,6 +185,7 @@ export default class PopUpFormFactory {
                     name: "priority",
                     value: "High",
                     required: false,
+                    checked: existingValues.priority == "High",
                 }),
             ]),
             new CheckboxFormItem({
@@ -179,6 +193,7 @@ export default class PopUpFormFactory {
                 id: "completed",
                 name: "completed",
                 required: false,
+                checked: existingValues.completed,
             }),
         ]);
     }
@@ -190,6 +205,7 @@ class FormItem {
         this.id = itemData.id;
         this.name = itemData.name;
         this.required = itemData.required || false;
+        this.value = itemData.value;
     }
 
     createFormItemSkeleton() {
@@ -215,6 +231,7 @@ class FormItem {
             fieldInput.setAttribute("placeholder", this.placeholder);
         if (this.required) fieldInput.setAttribute("required", true);
         if (this.value) fieldInput.setAttribute("value", this.value);
+        if (this.checked) fieldInput.checked = true;
 
         itemWrapper.appendChild(fieldInput);
         return itemWrapper;
@@ -226,7 +243,7 @@ class TextFormItem extends FormItem {
         super(itemData);
         this.htmlElementType = "input";
         this.type = "text";
-        this.placeHolder = itemData.placeHolder;
+        this.placeholder = itemData.placeholder;
     }
 }
 
@@ -235,7 +252,8 @@ class CheckboxFormItem extends FormItem {
         super(itemData);
         this.htmlElementType = "input";
         this.type = "checkbox";
-        this.placeHolder = itemData.placeHolder;
+        this.placeholder = itemData.placeholder;
+        this.checked = itemData.checked;
     }
 }
 
@@ -244,7 +262,7 @@ class DateFormItem extends FormItem {
         super(itemData);
         this.htmlElementType = "input";
         this.type = "date";
-        this.placeHolder = itemData.placeHolder;
+        this.placeholder = itemData.placeholder;
     }
 }
 
@@ -253,8 +271,9 @@ class RadioFormItem extends FormItem {
         super(itemData);
         this.htmlElementType = "input";
         this.type = "radio";
-        this.placeHolder = itemData.placeHolder;
+        this.placeholder = itemData.placeholder;
         this.value = itemData.value;
+        this.checked = itemData.checked;
     }
 }
 

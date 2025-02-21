@@ -124,7 +124,7 @@ img.delete-svg:hover {
 .sidebar-li.highlighted {
     white-space: wrap;
     text-overflow: ellipsis;
-    max-width: 25ch;
+    max-width: 15ch;
     text-decoration: underline;
 }
 
@@ -265,6 +265,7 @@ img.delete-svg:hover {
     padding-top: 1.5rem;
     display: flex;
     gap: 10px;
+    align-self: center;
 }
 
 .form-btn-group > input[type="button"],
@@ -306,18 +307,22 @@ input[type="date"] {
     text-decoration: underline;
 }
 
-.prio-low {
+.prio-Low {
     color: blue;
 }
 
-.prio-medium {
+.prio-Medium {
     color: orange;
 }
 
-.prio-high {
+.prio-High {
     color: red;
 }
 
-.delete-svg {
+img[src$=".svg"] {
     width: 1em;
+}
+
+img[src$=".svg"]:not(.delete-svg):hover {
+    filter: drop-shadow(0 0 2px var(--robin-egg-blue));
 }

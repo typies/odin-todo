@@ -18,6 +18,10 @@ class HomePage {
             "activeProjectChange",
             this.setActiveProject.bind(this)
         );
+        mainPubSub.subscribe(
+            "editButtonPressed",
+            this.openEditTodoItemPopUp.bind(this)
+        );
     }
     domElements = {
         content: document.querySelector("#content"),
@@ -46,65 +50,46 @@ class HomePage {
     }
 
     openNewTodoItemPopUp() {
-        const newProjectFormInputs = [
-            {
-                labelText: "Title",
-                id: "title",
-                elementType: "input",
-                type: "text",
-                class: "title-input",
-                name: "title",
-                required: true,
-            },
-            {
-                labelText: "Description",
-                id: "description",
-                elementType: "input",
-                type: "text",
-                class: "description-input",
-                name: "description",
-                required: false,
-            },
-            {
-                labelText: "Due Date",
-                id: "date",
-                elementType: "input",
-                type: "date",
-                class: "date-input",
-                name: "date",
-                required: true,
-            },
-            {
-                labelText: "Priority",
-                id: "priority",
-                elementType: "input",
-                type: "text",
-                class: "priority-input",
-                name: "priority",
-                required: false,
-            },
-            {
-                labelText: "Notes",
-                id: "notes",
-                elementType: "input",
-                type: "text",
-                class: "notes-input",
-                name: "notes",
-                required: false,
-            },
-            {
-                labelText: "Completed",
-                id: "completed",
-                elementType: "input",
-                type: "checkbox",
-                class: "completed-input",
-                name: "completed",
-                required: false,
-            },
-        ];
         const newProjectPopUp = PopUpFormFactory.createNewTodoItemPopUp();
         this.configureTodoItemSubmitButton(newProjectPopUp);
         document.body.appendChild(newProjectPopUp);
+    }
+
+    openEditTodoItemPopUp(data) {
+        const newProjectPopUp = PopUpFormFactory.createEditTodoItemPopUp(
+            data.todoItem
+        );
+        this.configureEditTodoItemSubmitButton(newProjectPopUp);
+        document.body.appendChild(newProjectPopUp);
+    }
+
+    configureEditTodoItemSubmitButton(newPopUp) {
+        newPopUp.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const formData = new FormData(newPopUp.querySelector("form"));
+            const todoItemData = {
+                title: formData.get("title"),
+                description: formData.get("description"),
+                date: formData.get("date"),
+                priority: formData.get("priority"),
+                notes: formData.get("notes"),
+                checkList: formData.get("checkList"),
+                completed: formData.get("completed") == "on",
+            };
+            const newTodoItem = PageProjectsManager.replaceTodoItem(
+                this.activeProjectName,
+                todoItemData
+            );
+            TodoListModule.replaceTodoInMainContent(
+                this.activeProjectName,
+                PageProjectsManager.getTodoItemIndex(
+                    this.activeProjectName,
+                    newTodoItem.title
+                ),
+                newTodoItem
+            );
+            newPopUp.remove();
+        });
     }
 
     configureTodoItemSubmitButton(newPopUp) {
@@ -114,7 +99,7 @@ class HomePage {
             const todoItemData = {
                 title: formData.get("title"),
                 description: formData.get("description"),
-                dueDate: formData.get("date"),
+                date: formData.get("date"),
                 priority: formData.get("priority"),
                 notes: formData.get("notes"),
                 checkList: formData.get("checkList"),
@@ -136,7 +121,7 @@ class HomePage {
                 this.activeProjectName,
                 todoItemData
             );
-            TodoListModule.appendLatestToMainContent(this.activeProjectName);
+            TodoListModule.insertLatestToMainContent(this.activeProjectName);
             newPopUp.remove();
         });
     }

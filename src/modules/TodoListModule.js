@@ -1,5 +1,6 @@
 import PageProjectsManager from "./PageProjectsManager";
 import mainPubSub from "./PubSub";
+import pencil from "../images/pencil.svg";
 
 class TodoListModule {
     constructor() {
@@ -20,14 +21,21 @@ class TodoListModule {
         }
     }
 
-    appendLatestToMainContent(projectName) {
+    replaceTodoInMainContent(projectName, index, newTodoItem) {
         const todoItemBox = document.querySelector(".todo-item-box");
-        todoItemBox.appendChild(
-            this.createTodoItemCard(
-                projectName,
-                PageProjectsManager.getProject(projectName).slice(-1)[0]
-            )
+        const newCard = this.createTodoItemCard(projectName, newTodoItem);
+        todoItemBox.replaceChild(newCard, todoItemBox.childNodes[index]);
+    }
+
+    insertLatestToMainContent(projectName, index) {
+        const todoItemBox = document.querySelector(".todo-item-box");
+        const newCard = this.createTodoItemCard(
+            projectName,
+            PageProjectsManager.getProject(projectName).slice(-1)[0]
         );
+        index
+            ? todoItemBox.insertBefore(index)
+            : todoItemBox.appendChild(newCard);
     }
 
     createTodoListSkeleton() {
@@ -63,24 +71,35 @@ class TodoListModule {
         newCard.classList.add("todo-item-card");
 
         const title = this.createTextDiv(todoItem.title, "todo-item-title");
-        const dueDate = this.createTextDiv(
-            `Due: ${todoItem.dueDate}`,
+        const date = this.createTextDiv(
+            `Due: ${todoItem.date}`,
             "todo-item-due"
         );
 
         const desc = this.createHiddenTextDiv(todoItem.description);
         const prio = this.createHiddenTextDiv(todoItem.priority, [
-            `prio-${todoItem.priority.toLowerCase()}`,
+            `prio-${todoItem.priority}`,
         ]);
         const notes = this.createHiddenTextDiv(todoItem.notes);
 
+        const editButton = document.createElement("img");
+        editButton.classList.add("hidden");
+        editButton.src = pencil;
+        editButton.addEventListener("click", () => {
+            mainPubSub.publish("editButtonPressed", {
+                projectName,
+                todoItem,
+                wrapper,
+            });
+        });
+
         newCard.addEventListener("click", () => {
-            for (const e of [desc, prio, notes]) {
+            for (const e of [desc, prio, notes, editButton]) {
                 e.classList.toggle("hidden");
             }
         });
 
-        newCard.replaceChildren(title, dueDate, desc, notes, prio);
+        newCard.replaceChildren(title, date, desc, notes, prio, editButton);
 
         const completedTick = this.createCompletedTick();
         if (todoItem.completed) {

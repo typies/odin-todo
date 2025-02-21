@@ -15,7 +15,7 @@ class PageProjectsManager {
         const newTodoItem = new TodoItem(
             todoData.title,
             todoData.description,
-            todoData.dueDate,
+            todoData.date,
             todoData.priority,
             todoData.notes,
             todoData.checklist,
@@ -23,6 +23,22 @@ class PageProjectsManager {
         );
         const project = this.getProject(projectName);
         project.push(newTodoItem);
+    }
+
+    replaceTodoItem(projectName, todoData) {
+        const newTodoItem = new TodoItem(
+            todoData.title,
+            todoData.description,
+            todoData.date,
+            todoData.priority,
+            todoData.notes,
+            todoData.checklist,
+            todoData.completed
+        );
+        const index = this.getTodoItemIndex(projectName, todoData.title);
+        const project = this.getProject(projectName);
+        project.splice(index, 1, newTodoItem);
+        return newTodoItem;
     }
 
     addTodoItems(projectName, todoDataList) {
@@ -36,13 +52,19 @@ class PageProjectsManager {
             .get(projectName)
             .find((todoItem) => todoItem.title == itemTitle);
     }
+
+    getTodoItemIndex(projectName, itemTitle) {
+        return this.sharedProjectList
+            .get(projectName)
+            .findIndex((todoItem) => todoItem.title == itemTitle);
+    }
 }
 
 class TodoItem {
     constructor(
         title,
         description,
-        dueDate,
+        date,
         priority,
         notes,
         checkList,
@@ -50,7 +72,7 @@ class TodoItem {
     ) {
         this.title = title;
         this.description = description;
-        this.dueDate = dueDate;
+        this.date = date;
         this.priority = priority;
         this.notes = notes;
         this.checkList = checkList;
