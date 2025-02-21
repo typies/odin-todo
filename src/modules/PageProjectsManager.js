@@ -58,6 +58,12 @@ class PageProjectsManager {
             .get(projectName)
             .findIndex((todoItem) => todoItem.title == itemTitle);
     }
+
+    removeTodoItem(projectName, itemTitle) {
+        this.sharedProjectList
+            .get(projectName)
+            .splice(this.getTodoItemIndex(projectName, itemTitle), 1);
+    }
 }
 
 class TodoItem {

@@ -194,6 +194,14 @@ img.delete-svg:hover {
     font-weight: 800;
 }
 
+.todo-item-btn-div {
+    display: flex;
+}
+
+.todo-item-btn-div.hidden > * {
+    display: none;
+}
+
 .completed-tick {
     width: 1em;
     height: 1em;

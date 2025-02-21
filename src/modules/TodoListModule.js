@@ -1,6 +1,7 @@
 import PageProjectsManager from "./PageProjectsManager";
 import mainPubSub from "./PubSub";
-import pencil from "../images/pencil.svg";
+import pencilSvg from "../images/pencil.svg";
+import trashSvg from "../images/trash.svg";
 
 class TodoListModule {
     constructor() {
@@ -82,9 +83,11 @@ class TodoListModule {
         ]);
         const notes = this.createHiddenTextDiv(todoItem.notes);
 
+        const btnDiv = document.createElement("div");
+        btnDiv.classList.add(...["todo-item-btn-div", "hidden"]);
+
         const editButton = document.createElement("img");
-        editButton.classList.add("hidden");
-        editButton.src = pencil;
+        editButton.src = pencilSvg;
         editButton.addEventListener("click", () => {
             mainPubSub.publish("editButtonPressed", {
                 projectName,
@@ -93,13 +96,23 @@ class TodoListModule {
             });
         });
 
+        const deleteButton = document.createElement("img");
+        deleteButton.src = trashSvg;
+        deleteButton.classList.add("delete-svg");
+        deleteButton.addEventListener("click", () => {
+            PageProjectsManager.removeTodoItem(projectName, todoItem.title);
+            wrapper.remove();
+        });
+
+        btnDiv.replaceChildren(editButton, deleteButton);
+
         newCard.addEventListener("click", () => {
-            for (const e of [desc, prio, notes, editButton]) {
+            for (const e of [desc, prio, notes, btnDiv]) {
                 e.classList.toggle("hidden");
             }
         });
 
-        newCard.replaceChildren(title, date, desc, notes, prio, editButton);
+        newCard.replaceChildren(title, date, desc, notes, prio, btnDiv);
 
         const completedTick = this.createCompletedTick();
         if (todoItem.completed) {
