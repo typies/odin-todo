@@ -93,11 +93,11 @@ class TodoListModule {
             completedTick.classList.add("ticked");
         }
         completedTick.addEventListener("click", () => {
-            const temp = PageProjectsManager.getTodoItem(
+            const todoItem = PageProjectsManager.getTodoItem(
                 projectName,
                 todoItem.title
             );
-            temp.completed = !todoItem.completed;
+            todoItem.completed = !todoItem.completed;
         });
         wrapper.replaceChildren(completedTick, newCard);
 
@@ -134,13 +134,14 @@ class TodoListModule {
     replaceMainContent(projectName, todoItems) {
         const todoItemBox = document.querySelector(".todo-item-box");
         todoItemBox.replaceChildren();
+        if (!projectName || !todoItems) return;
         // Create todo card for each todo
-        if (todoItems)
-            for (const todoItem of todoItems) {
-                todoItemBox.appendChild(
-                    this.createTodoItemCard(projectName, todoItem)
-                );
-            }
+
+        for (const todoItem of todoItems) {
+            todoItemBox.appendChild(
+                this.createTodoItemCard(projectName, todoItem)
+            );
+        }
     }
 
     replaceTodoInMainContent(projectName, index, newTodoItem) {

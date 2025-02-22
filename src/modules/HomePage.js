@@ -36,7 +36,7 @@ class HomePage {
         PageProjectsManager.deleteProject(projectName);
         if (this.activeProjectName == projectName) {
             this.activeProjectName = null;
-            this.setDefaultProject();
+            mainPubSub.publish("activeProjectChange", this.activeProjectName);
         }
     }
 
@@ -88,7 +88,6 @@ class HomePage {
     openNewTodoItemPopUp() {
         const newProjectPopUp = PopUpFormFactory.createNewTodoItemPopUp();
         this.configureTodoItemSubmitButton(newProjectPopUp, (todoItemData) => {
-            const temp = PageProjectsManager;
             if (!PageProjectsManager.getProject(this.activeProjectName))
                 this.setDefaultProject();
 

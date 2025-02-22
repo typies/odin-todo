@@ -1,11 +1,38 @@
 class PageProjectsManager {
     constructor() {
         this.sharedProjectList = new Map(); // (projectName, List<TodoItem>)
+        this.importProjectsFromLocal();
+    }
+
+    localStorageAdd(projectName) {
+        localStorage.setItem(
+            projectName,
+            JSON.stringify(this.getProject(projectName))
+        );
+    }
+
+    localStorageRemove(projectName) {
+        localStorage.removeItem(projectName);
+    }
+
+    localStorageRefresh(projectName) {
+        this.localStorageRemove(projectName);
+        this.localStorageAdd(projectName);
+    }
+
+    importProjectsFromLocal() {
+        for (let i = 0; i < window.localStorage.length; i++) {
+            const projectName = window.localStorage.key(i);
+            const todoItemsString = window.localStorage.getItem(projectName);
+            this.addNewProject(projectName);
+            this.addTodoItems(projectName, JSON.parse(todoItemsString));
+        }
     }
 
     addNewProject(projectName) {
         if (!this.getProject(projectName)) {
             this.sharedProjectList.set(projectName, []);
+            this.localStorageAdd(projectName);
             return true;
         }
         return false;
@@ -17,12 +44,13 @@ class PageProjectsManager {
 
     updateProjectName(oldProjectName, newProjectName) {
         const existingTodoItems = this.getProject(oldProjectName);
-        this.sharedProjectList.delete(oldProjectName);
+        this.deleteProject(oldProjectName);
         this.addNewProject(newProjectName);
         this.addTodoItems(newProjectName, existingTodoItems);
     }
 
     deleteProject(projectName) {
+        this.localStorageRemove(projectName);
         return this.sharedProjectList.delete(projectName);
     }
 
@@ -38,6 +66,7 @@ class PageProjectsManager {
             todoData.completed
         );
         project.push(newTodoItem);
+        this.localStorageRefresh(projectName);
         return newTodoItem;
     }
 
@@ -72,6 +101,7 @@ class PageProjectsManager {
         );
         const index = this.getTodoItemIndex(projectName, todoData.title);
         project.splice(index, 1, newTodoItem);
+        this.localStorageRefresh(projectName);
         return newTodoItem;
     }
 
@@ -79,6 +109,7 @@ class PageProjectsManager {
         const project = this.getProject(projectName);
         if (!project) return;
         project.splice(this.getTodoItemIndex(projectName, itemTitle), 1);
+        this.localStorageRefresh(projectName);
     }
 
     createTodoItemFromFormData(formData) {

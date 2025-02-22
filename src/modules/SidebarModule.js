@@ -11,17 +11,20 @@ class SidebarModule {
     }
 
     changeActiveProject(projectName) {
-        const sidebarLiTexts = document.querySelectorAll(".sidebar-li-text");
         const highlightedElement = document.querySelector(
             ".sidebar-li-text.highlighted"
         );
         if (highlightedElement)
             highlightedElement.classList.remove("highlighted");
+
+        if (!projectName) return;
+
+        const sidebarLiTexts = document.querySelectorAll(".sidebar-li-text");
         const newActiveLi = Array.from(sidebarLiTexts).find(
             (div) => div.textContent == projectName
         );
 
-        newActiveLi.classList.add("highlighted");
+        if (newActiveLi) newActiveLi.classList.add("highlighted");
     }
 
     createSidebarSkeleton() {
