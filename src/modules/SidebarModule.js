@@ -1,4 +1,3 @@
-import PageProjectsManager from "./PageProjectsManager";
 import mainPubSub from "./PubSub";
 import trashSvg from "../images/trash.svg";
 import pencilSvg from "../images/pencil.svg";
@@ -54,8 +53,8 @@ class SidebarModule {
         return newBtn;
     }
 
-    populateSidebar() {
-        for (const projectName of PageProjectsManager.sharedProjectList.keys()) {
+    populateSidebar(projectNameList) {
+        for (const projectName of projectNameList) {
             this.addNewSidebarItem(projectName);
         }
     }
@@ -86,7 +85,6 @@ class SidebarModule {
         sidebarDelete.classList.add("delete-svg");
         sidebarDelete.src = trashSvg;
         sidebarDelete.addEventListener("click", () => {
-            PageProjectsManager.deleteProject(projectName);
             mainPubSub.publish("deletedProject", projectName);
             sidebarLi.remove();
         });

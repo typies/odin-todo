@@ -4,12 +4,7 @@ import pencilSvg from "../images/pencil.svg";
 import trashSvg from "../images/trash.svg";
 
 class TodoListModule {
-    constructor() {
-        mainPubSub.subscribe(
-            "activeProjectChange",
-            this.replaceMainContent.bind(this)
-        );
-    }
+    constructor() {}
 
     addTodoItem(projectName, todoItem, index = false) {
         const todoItemBox = document.querySelector(".todo-item-box");
@@ -69,8 +64,7 @@ class TodoListModule {
         const editButton = document.createElement("img");
         editButton.src = pencilSvg;
         editButton.addEventListener("click", () => {
-            mainPubSub.publish("editButtonPressed", {
-                projectName,
+            mainPubSub.publish("editTodoButtonPressed", {
                 todoItem,
                 wrapper,
             });
@@ -137,11 +131,10 @@ class TodoListModule {
         return completedTick;
     }
 
-    replaceMainContent(projectName) {
+    replaceMainContent(projectName, todoItems) {
         const todoItemBox = document.querySelector(".todo-item-box");
         todoItemBox.replaceChildren();
         // Create todo card for each todo
-        const todoItems = PageProjectsManager.getProject(projectName);
         if (todoItems)
             for (const todoItem of todoItems) {
                 todoItemBox.appendChild(

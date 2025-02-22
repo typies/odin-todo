@@ -35,7 +35,6 @@ class PageProjectsManager {
             todoData.date,
             todoData.priority,
             todoData.notes,
-            todoData.checklist,
             todoData.completed
         );
         project.push(newTodoItem);
@@ -69,7 +68,6 @@ class PageProjectsManager {
             todoData.date,
             todoData.priority,
             todoData.notes,
-            todoData.checklist,
             todoData.completed
         );
         const index = this.getTodoItemIndex(projectName, todoData.title);

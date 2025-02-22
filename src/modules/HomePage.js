@@ -15,32 +15,37 @@ class HomePage {
             this.openEditProjectPopUp.bind(this)
         );
         mainPubSub.subscribe(
+            "deletedProject",
+            this.handleDeletedProject.bind(this)
+        );
+        mainPubSub.subscribe(
             "newTodoItemBtnPressed",
             this.openNewTodoItemPopUp.bind(this)
         );
         mainPubSub.subscribe(
-            "editButtonPressed",
+            "editTodoButtonPressed",
             this.openEditTodoItemPopUp.bind(this)
         );
         mainPubSub.subscribe(
             "activeProjectChange",
             this.setActiveProject.bind(this)
         );
-        mainPubSub.subscribe(
-            "deletedProject",
-            this.handleDeletedProject.bind(this)
-        );
     }
 
     handleDeletedProject(projectName) {
+        PageProjectsManager.deleteProject(projectName);
         if (this.activeProjectName == projectName) {
             this.activeProjectName = null;
-            TodoListModule.replaceMainContent();
+            this.setDefaultProject();
         }
     }
 
     setActiveProject(projectName) {
         this.activeProjectName = projectName;
+        TodoListModule.replaceMainContent(
+            projectName,
+            PageProjectsManager.getProject(projectName)
+        );
     }
 
     openNewProjectPopUp() {
@@ -85,7 +90,7 @@ class HomePage {
         this.configureTodoItemSubmitButton(newProjectPopUp, (todoItemData) => {
             const temp = PageProjectsManager;
             if (!PageProjectsManager.getProject(this.activeProjectName))
-                this.setUpDefaultProject();
+                this.setDefaultProject();
 
             if (
                 !PageProjectsManager.getTodoItem(
@@ -135,7 +140,7 @@ class HomePage {
         });
     }
 
-    setUpDefaultProject() {
+    setDefaultProject() {
         if (PageProjectsManager.sharedProjectList.size == 0) {
             PageProjectsManager.addNewProject("Default");
             SidebarModule.addNewSidebarItem("Default");
@@ -153,8 +158,10 @@ class HomePage {
                 SidebarModule.createSidebarSkeleton(),
                 TodoListModule.createTodoListSkeleton()
             );
-        SidebarModule.populateSidebar();
-        this.setUpDefaultProject();
+        SidebarModule.populateSidebar(
+            PageProjectsManager.sharedProjectList.keys()
+        );
+        this.setDefaultProject();
     }
 }
 
