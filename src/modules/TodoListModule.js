@@ -98,11 +98,10 @@ class TodoListModule {
             completedTick.classList.add("ticked");
         }
         completedTick.addEventListener("click", () => {
-            const todoItemClicked = PageProjectsManager.getTodoItem(
-                projectName,
-                todoItem.title
-            );
-            todoItemClicked.completed = !todoItemClicked.completed;
+            PageProjectsManager.replaceTodoItem(projectName, {
+                ...todoItem,
+                completed: !todoItem.completed,
+            });
         });
         wrapper.replaceChildren(completedTick, newCard);
 
