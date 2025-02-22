@@ -204,7 +204,7 @@ div:not(.ticked) + div > .urgent-date {
 }
 
 .todo-item-btn-div.hidden > *,
-.sidebar-btn-div.hidden > * {
+.sidebar-btn-div:not(:has(+ .sidebar-li-text.highlighted)) {
     display: none;
 }
 
