@@ -4,11 +4,15 @@ class PageProjectsManager {
     }
 
     addNewProject(projectName) {
-        if (!this.sharedProjectList.get(projectName)) {
+        if (!this.getProject(projectName)) {
             this.sharedProjectList.set(projectName, []);
             return true;
         }
         return false;
+    }
+
+    getProject(projectName) {
+        return this.sharedProjectList.get(projectName);
     }
 
     updateProjectName(oldProjectName, newProjectName) {
@@ -18,15 +22,13 @@ class PageProjectsManager {
         this.addTodoItems(newProjectName, existingTodoItems);
     }
 
-    getProject(projectName) {
-        return this.sharedProjectList.get(projectName);
-    }
-
     deleteProject(projectName) {
         return this.sharedProjectList.delete(projectName);
     }
 
     addTodoItem(projectName, todoData) {
+        const project = this.getProject(projectName);
+        if (!project) return;
         const newTodoItem = new TodoItem(
             todoData.title,
             todoData.description,
@@ -36,24 +38,7 @@ class PageProjectsManager {
             todoData.checklist,
             todoData.completed
         );
-        const project = this.getProject(projectName);
         project.push(newTodoItem);
-        return newTodoItem;
-    }
-
-    replaceTodoItem(projectName, todoData) {
-        const newTodoItem = new TodoItem(
-            todoData.title,
-            todoData.description,
-            todoData.date,
-            todoData.priority,
-            todoData.notes,
-            todoData.checklist,
-            todoData.completed
-        );
-        const index = this.getTodoItemIndex(projectName, todoData.title);
-        const project = this.getProject(projectName);
-        project.splice(index, 1, newTodoItem);
         return newTodoItem;
     }
 
@@ -64,40 +49,59 @@ class PageProjectsManager {
     }
 
     getTodoItem(projectName, itemTitle) {
-        return this.sharedProjectList
-            .get(projectName)
-            .find((todoItem) => todoItem.title == itemTitle);
+        const project = this.getProject(projectName);
+        if (!project) return;
+        return project.find((todoItem) => todoItem.title == itemTitle);
     }
 
     getTodoItemIndex(projectName, itemTitle) {
-        return this.sharedProjectList
-            .get(projectName)
-            .findIndex((todoItem) => todoItem.title == itemTitle);
+        const project = this.getProject(projectName);
+        if (!project) return;
+        return project.findIndex((todoItem) => todoItem.title == itemTitle);
+    }
+
+    replaceTodoItem(projectName, todoData) {
+        const project = this.getProject(projectName);
+        if (!project) return;
+        const newTodoItem = new TodoItem(
+            todoData.title,
+            todoData.description,
+            todoData.date,
+            todoData.priority,
+            todoData.notes,
+            todoData.checklist,
+            todoData.completed
+        );
+        const index = this.getTodoItemIndex(projectName, todoData.title);
+        project.splice(index, 1, newTodoItem);
+        return newTodoItem;
     }
 
     removeTodoItem(projectName, itemTitle) {
-        this.sharedProjectList
-            .get(projectName)
-            .splice(this.getTodoItemIndex(projectName, itemTitle), 1);
+        const project = this.getProject(projectName);
+        if (!project) return;
+        project.splice(this.getTodoItemIndex(projectName, itemTitle), 1);
+    }
+
+    createTodoItemFromFormData(formData) {
+        return new TodoItem(
+            formData.get("title"),
+            formData.get("description"),
+            formData.get("date"),
+            formData.get("priority"),
+            formData.get("notes"),
+            formData.get("completed") == "on"
+        );
     }
 }
 
 class TodoItem {
-    constructor(
-        title,
-        description,
-        date,
-        priority,
-        notes,
-        checkList,
-        completed = false
-    ) {
+    constructor(title, description, date, priority, notes, completed = false) {
         this.title = title;
         this.description = description;
         this.date = date;
         this.priority = priority;
         this.notes = notes;
-        this.checkList = checkList;
         this.completed = completed;
     }
 }

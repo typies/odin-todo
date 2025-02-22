@@ -11,25 +11,6 @@ class TodoListModule {
         );
     }
 
-    replaceMainContent(projectName) {
-        const todoItemBox = document.querySelector(".todo-item-box");
-        todoItemBox.replaceChildren();
-        // Create todo card for each todo
-        const todoItems = PageProjectsManager.getProject(projectName);
-        if (todoItems)
-            for (const todoItem of todoItems) {
-                todoItemBox.appendChild(
-                    this.createTodoItemCard(projectName, todoItem)
-                );
-            }
-    }
-
-    replaceTodoInMainContent(projectName, index, newTodoItem) {
-        const todoItemBox = document.querySelector(".todo-item-box");
-        const newCard = this.createTodoItemCard(projectName, newTodoItem);
-        todoItemBox.replaceChild(newCard, todoItemBox.childNodes[index]);
-    }
-
     addTodoItem(projectName, todoItem, index = false) {
         const todoItemBox = document.querySelector(".todo-item-box");
         const newCard = this.createTodoItemCard(projectName, todoItem);
@@ -154,6 +135,25 @@ class TodoListModule {
         });
 
         return completedTick;
+    }
+
+    replaceMainContent(projectName) {
+        const todoItemBox = document.querySelector(".todo-item-box");
+        todoItemBox.replaceChildren();
+        // Create todo card for each todo
+        const todoItems = PageProjectsManager.getProject(projectName);
+        if (todoItems)
+            for (const todoItem of todoItems) {
+                todoItemBox.appendChild(
+                    this.createTodoItemCard(projectName, todoItem)
+                );
+            }
+    }
+
+    replaceTodoInMainContent(projectName, index, newTodoItem) {
+        const todoItemBox = document.querySelector(".todo-item-box");
+        const newCard = this.createTodoItemCard(projectName, newTodoItem);
+        todoItemBox.replaceChild(newCard, todoItemBox.childNodes[index]);
     }
 }
 
