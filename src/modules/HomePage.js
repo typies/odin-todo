@@ -70,6 +70,7 @@ class HomePage {
                     newProjectName
                 );
                 SidebarModule.replaceSidebarItem(projectName, newProjectName);
+                SidebarModule.changeActiveProject(newProjectName);
             }
         );
         document.body.appendChild(editProjectPopUp);
