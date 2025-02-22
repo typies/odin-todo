@@ -2,7 +2,12 @@ import PageProjectsManager from "./PageProjectsManager";
 import mainPubSub from "./PubSub";
 import pencilSvg from "../images/pencil.svg";
 import trashSvg from "../images/trash.svg";
-import { differenceInDays, endOfDay, formatDistanceToNow } from "date-fns";
+import {
+    differenceInDays,
+    endOfDay,
+    formatDistanceToNow,
+    parseISO,
+} from "date-fns";
 
 class TodoListModule {
     constructor() {}
@@ -49,7 +54,7 @@ class TodoListModule {
 
         const title = this.createTextDiv(todoItem.title, "todo-item-title");
 
-        const dueDate = endOfDay(todoItem.date);
+        const dueDate = endOfDay(parseISO(todoItem.date));
         const dateText = formatDistanceToNow(dueDate, {
             addSuffix: true,
         });
