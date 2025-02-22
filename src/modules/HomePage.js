@@ -11,21 +11,36 @@ class HomePage {
             this.openNewProjectPopUp.bind(this)
         );
         mainPubSub.subscribe(
+            "editProjectBtnPressed",
+            this.openEditProjectPopUp.bind(this)
+        );
+        mainPubSub.subscribe(
             "newTodoItemBtnPressed",
             this.openNewTodoItemPopUp.bind(this)
+        );
+        mainPubSub.subscribe(
+            "editButtonPressed",
+            this.openEditTodoItemPopUp.bind(this)
         );
         mainPubSub.subscribe(
             "activeProjectChange",
             this.setActiveProject.bind(this)
         );
         mainPubSub.subscribe(
-            "editButtonPressed",
-            this.openEditTodoItemPopUp.bind(this)
+            "deletedProject",
+            this.handleDeletedProject.bind(this)
         );
     }
     domElements = {
         content: document.querySelector("#content"),
     };
+
+    handleDeletedProject(projectName) {
+        if (this.activeProjectName == projectName) {
+            this.activeProjectName = null;
+            TodoListModule.replaceMainContent();
+        }
+    }
 
     setActiveProject(projectName) {
         this.activeProjectName = projectName;
@@ -37,14 +52,36 @@ class HomePage {
         document.body.appendChild(newProjectPopUp);
     }
 
+    openEditProjectPopUp(projectName) {
+        const editProjectPopUp =
+            PopUpFormFactory.createEditProjectPopUp(projectName);
+        this.configureEditProjectSubmitButton(projectName, editProjectPopUp);
+        document.body.appendChild(editProjectPopUp);
+    }
+
     configureNewProjectSubmitButton(newPopUp) {
         newPopUp.addEventListener("submit", (event) => {
             event.preventDefault();
             const formData = new FormData(newPopUp.querySelector("form"));
             const newProjectName = formData.get("project-name");
-            PageProjectsManager.addNewProject(newProjectName);
-            SidebarModule.addNewSidebarItem(newProjectName);
+            if (PageProjectsManager.addNewProject(newProjectName)) {
+                SidebarModule.addNewSidebarItem(newProjectName);
+            }
             mainPubSub.publish("activeProjectChange", newProjectName);
+            newPopUp.remove();
+        });
+    }
+
+    configureEditProjectSubmitButton(oldProjectName, newPopUp) {
+        newPopUp.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const formData = new FormData(newPopUp.querySelector("form"));
+            const newProjectName = formData.get("project-name");
+            PageProjectsManager.updateProjectName(
+                oldProjectName,
+                newProjectName
+            );
+            SidebarModule.replaceSidebarItem(oldProjectName, newProjectName);
             newPopUp.remove();
         });
     }
@@ -56,11 +93,11 @@ class HomePage {
     }
 
     openEditTodoItemPopUp(data) {
-        const newProjectPopUp = PopUpFormFactory.createEditTodoItemPopUp(
+        const editProjectPopUp = PopUpFormFactory.createEditTodoItemPopUp(
             data.todoItem
         );
-        this.configureEditTodoItemSubmitButton(newProjectPopUp);
-        document.body.appendChild(newProjectPopUp);
+        this.configureEditTodoItemSubmitButton(editProjectPopUp);
+        document.body.appendChild(editProjectPopUp);
     }
 
     configureEditTodoItemSubmitButton(newPopUp) {
@@ -106,24 +143,33 @@ class HomePage {
                 completed: formData.get("completed") == "on",
             };
             if (!this.activeProjectName) {
-                if (PageProjectsManager.sharedProjectList.length == 0) {
-                    PageProjectsManager.addNewProject("Default");
-                }
-                this.activeProjectName = PageProjectsManager.sharedProjectList
-                    .keys()
-                    .next().value;
-                mainPubSub.publish(
-                    "activeProjectChange",
-                    this.activeProjectName
-                );
+                this.setUpDefaultProject();
             }
-            PageProjectsManager.addTodoItem(
-                this.activeProjectName,
-                todoItemData
-            );
-            TodoListModule.insertLatestToMainContent(this.activeProjectName);
+            if (
+                !PageProjectsManager.getTodoItem(
+                    this.activeProjectName,
+                    todoItemData.title
+                )
+            ) {
+                const newTodoItem = PageProjectsManager.addTodoItem(
+                    this.activeProjectName,
+                    todoItemData
+                );
+                TodoListModule.addTodoItem(this.activeProjectName, newTodoItem);
+            }
             newPopUp.remove();
         });
+    }
+
+    setUpDefaultProject() {
+        if (PageProjectsManager.sharedProjectList.size == 0) {
+            PageProjectsManager.addNewProject("Default");
+        }
+        this.activeProjectName = PageProjectsManager.sharedProjectList
+            .keys()
+            .next().value;
+        SidebarModule.addNewSidebarItem(this.activeProjectName);
+        mainPubSub.publish("activeProjectChange", this.activeProjectName);
     }
 
     render() {

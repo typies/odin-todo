@@ -87,6 +87,13 @@ export default class PopUpFormFactory {
         return this.createNewPopUp("New Project", this.createNewProjectForm());
     }
 
+    static createEditProjectPopUp(currentProjectName) {
+        return this.createNewPopUp(
+            "Change Project Name",
+            this.createNewProjectForm(currentProjectName)
+        );
+    }
+
     static createNewTodoItemPopUp() {
         return this.createNewPopUp(
             "Create New Todo Item",
@@ -128,13 +135,14 @@ export default class PopUpFormFactory {
         return form;
     }
 
-    static createNewProjectForm() {
+    static createNewProjectForm(currentProjectName = "") {
         return this.createNewForm([
             new TextFormItem({
                 labelText: "Project Name",
                 id: "project-name",
                 name: "project-name",
                 required: true,
+                value: currentProjectName,
             }),
         ]);
     }

@@ -15,11 +15,13 @@ class TodoListModule {
         const todoItemBox = document.querySelector(".todo-item-box");
         todoItemBox.replaceChildren();
         // Create todo card for each todo
-        for (const todoItems of PageProjectsManager.getProject(projectName)) {
-            todoItemBox.appendChild(
-                this.createTodoItemCard(projectName, todoItems)
-            );
-        }
+        const todoItems = PageProjectsManager.getProject(projectName);
+        if (todoItems)
+            for (const todoItem of todoItems) {
+                todoItemBox.appendChild(
+                    this.createTodoItemCard(projectName, todoItem)
+                );
+            }
     }
 
     replaceTodoInMainContent(projectName, index, newTodoItem) {
@@ -28,12 +30,9 @@ class TodoListModule {
         todoItemBox.replaceChild(newCard, todoItemBox.childNodes[index]);
     }
 
-    insertLatestToMainContent(projectName, index) {
+    addTodoItem(projectName, todoItem, index = false) {
         const todoItemBox = document.querySelector(".todo-item-box");
-        const newCard = this.createTodoItemCard(
-            projectName,
-            PageProjectsManager.getProject(projectName).slice(-1)[0]
-        );
+        const newCard = this.createTodoItemCard(projectName, todoItem);
         index
             ? todoItemBox.insertBefore(index)
             : todoItemBox.appendChild(newCard);
@@ -104,7 +103,7 @@ class TodoListModule {
             wrapper.remove();
         });
 
-        btnDiv.replaceChildren(editButton, deleteButton);
+        btnDiv.replaceChildren(deleteButton, editButton);
 
         newCard.addEventListener("click", () => {
             for (const e of [desc, prio, notes, btnDiv]) {

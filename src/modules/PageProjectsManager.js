@@ -4,11 +4,26 @@ class PageProjectsManager {
     }
 
     addNewProject(projectName) {
-        this.sharedProjectList.set(projectName, []);
+        if (!this.sharedProjectList.get(projectName)) {
+            this.sharedProjectList.set(projectName, []);
+            return true;
+        }
+        return false;
+    }
+
+    updateProjectName(oldProjectName, newProjectName) {
+        const existingTodoItems = this.getProject(oldProjectName);
+        this.sharedProjectList.delete(oldProjectName);
+        this.addNewProject(newProjectName);
+        this.addTodoItems(newProjectName, existingTodoItems);
     }
 
     getProject(projectName) {
         return this.sharedProjectList.get(projectName);
+    }
+
+    deleteProject(projectName) {
+        return this.sharedProjectList.delete(projectName);
     }
 
     addTodoItem(projectName, todoData) {
@@ -23,6 +38,7 @@ class PageProjectsManager {
         );
         const project = this.getProject(projectName);
         project.push(newTodoItem);
+        return newTodoItem;
     }
 
     replaceTodoItem(projectName, todoData) {

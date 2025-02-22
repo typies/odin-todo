@@ -99,14 +99,15 @@ header {
     font-size: 1.4rem;
     padding: 8px;
     color: var(--sidebar-li-text-clr, black);
-    max-width: 15ch;
+    min-width: 20ch;
+    max-width: 20ch;
     font-family: var(--caveat-font);
     font-weight: 800;
     font-size: 2rem;
     display: flex;
 }
 
-.sidebar-li > div {
+.sidebar-li-text {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -124,7 +125,7 @@ img.delete-svg:hover {
 .sidebar-li.highlighted {
     white-space: wrap;
     text-overflow: ellipsis;
-    max-width: 15ch;
+    max-width: 20ch;
     text-decoration: underline;
 }
 
@@ -194,11 +195,13 @@ img.delete-svg:hover {
     font-weight: 800;
 }
 
-.todo-item-btn-div {
+.todo-item-btn-div,
+.sidebar-btn-div {
     display: flex;
 }
 
-.todo-item-btn-div.hidden > * {
+.todo-item-btn-div.hidden > *,
+.sidebar-btn-div.hidden > * {
     display: none;
 }
 

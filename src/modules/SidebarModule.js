@@ -1,6 +1,7 @@
 import PageProjectsManager from "./PageProjectsManager";
 import mainPubSub from "./PubSub";
 import trashSvg from "../images/trash.svg";
+import pencilSvg from "../images/pencil.svg";
 
 class SidebarModule {
     constructor() {
@@ -11,14 +12,14 @@ class SidebarModule {
     }
 
     changeActiveProject(projectName) {
-        const sidebarLis = document.querySelectorAll(".sidebar-li");
+        const sidebarLiTexts = document.querySelectorAll(".sidebar-li-text");
         const highlightedElement = document.querySelector(
-            ".sidebar-li.highlighted"
+            ".sidebar-li-text.highlighted"
         );
         if (highlightedElement)
             highlightedElement.classList.remove("highlighted");
-        const newActiveLi = Array.from(sidebarLis).find(
-            (li) => li.querySelector("div").textContent == projectName
+        const newActiveLi = Array.from(sidebarLiTexts).find(
+            (div) => div.textContent == projectName
         );
 
         newActiveLi.classList.add("highlighted");
@@ -59,32 +60,61 @@ class SidebarModule {
         }
     }
 
+    replaceSidebarItem(oldProjectName, newProjectName) {
+        const sidebarLiTexts = document.querySelectorAll(".sidebar-li-text");
+        const liToReplace = Array.from(sidebarLiTexts).find(
+            (div) => div.textContent == oldProjectName
+        ).parentNode;
+        const newSidebarItem = this.createNewSidebarItem(newProjectName);
+        liToReplace.parentNode.replaceChild(newSidebarItem, liToReplace);
+    }
+
     addNewSidebarItem(projectName) {
         const sidebarBox = document.querySelector(".sidebar-box");
+        const newSidebarItem = this.createNewSidebarItem(projectName);
+        sidebarBox.appendChild(newSidebarItem);
+    }
+
+    createNewSidebarItem(projectName) {
         const sidebarLi = document.createElement("li");
         sidebarLi.classList.add("sidebar-li");
 
+        const sidebarLiButtonDiv = document.createElement("div");
+        sidebarLiButtonDiv.classList.add(...["sidebar-btn-div", "hidden"]);
+
         const sidebarDelete = document.createElement("img");
-        sidebarDelete.classList.add("delete-svg", "hidden");
+        sidebarDelete.classList.add("delete-svg");
         sidebarDelete.src = trashSvg;
-        sidebarLi.addEventListener("mouseenter", () => {
-            sidebarDelete.classList.remove("hidden");
-        });
-        sidebarLi.addEventListener("mouseleave", () => {
-            sidebarDelete.classList.add("hidden");
-        });
         sidebarDelete.addEventListener("click", () => {
+            PageProjectsManager.deleteProject(projectName);
+            mainPubSub.publish("deletedProject", projectName);
             sidebarLi.remove();
         });
 
+        const sidebarEdit = document.createElement("img");
+        sidebarEdit.src = pencilSvg;
+        sidebarEdit.addEventListener("click", () => {
+            mainPubSub.publish("editProjectBtnPressed", projectName);
+        });
+
+        sidebarLiButtonDiv.replaceChildren(sidebarDelete, sidebarEdit);
+        sidebarLi.addEventListener("mouseenter", () => {
+            sidebarLiButtonDiv.classList.remove("hidden");
+        });
+        sidebarLi.addEventListener("mouseleave", () => {
+            sidebarLiButtonDiv.classList.add("hidden");
+        });
+
         const sidebarLiText = document.createElement("div");
+        sidebarLiText.classList.add("sidebar-li-text");
         sidebarLiText.textContent = projectName;
-        sidebarLi.replaceChildren(sidebarDelete, sidebarLiText);
+
+        sidebarLi.replaceChildren(sidebarLiButtonDiv, sidebarLiText);
 
         sidebarLiText.addEventListener("click", () => {
             mainPubSub.publish("activeProjectChange", projectName);
         });
-        sidebarBox.appendChild(sidebarLi);
+        return sidebarLi;
     }
 }
 
