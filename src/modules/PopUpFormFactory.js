@@ -1,3 +1,5 @@
+import { format, endOfDay } from "date-fns";
+
 export default class PopUpFormFactory {
     static createNewPopUp(popUpTitle, newForm) {
         const popUpFormContainer = document.createElement("div");
@@ -88,6 +90,7 @@ export default class PopUpFormFactory {
     }
 
     static createNewTodoItemForm(existingValues = {}) {
+        const formattedToday = format(new Date(), "yyyy-MM-dd");
         return this.createNewForm([
             new TextFormItem({
                 labelText: "Todo Title",
@@ -108,7 +111,7 @@ export default class PopUpFormFactory {
                 id: "due-date",
                 name: "date",
                 required: true,
-                value: existingValues.date,
+                value: existingValues.date || formattedToday,
             }),
             new RadioFormItemWrapper("Priority", [
                 new RadioFormItem({

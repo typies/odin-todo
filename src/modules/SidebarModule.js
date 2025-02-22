@@ -82,7 +82,8 @@ class SidebarModule {
         sidebarLi.classList.add("sidebar-li");
 
         const sidebarLiButtonDiv = document.createElement("div");
-        sidebarLiButtonDiv.classList.add(...["sidebar-btn-div", "hidden"]);
+        sidebarLiButtonDiv.classList.add(...["sidebar-btn-div"]);
+        // sidebarLiButtonDiv.classList.add(...["sidebar-btn-div", "hidden"]);
 
         const sidebarDelete = document.createElement("img");
         sidebarDelete.classList.add("delete-svg");
@@ -99,12 +100,12 @@ class SidebarModule {
         });
 
         sidebarLiButtonDiv.replaceChildren(sidebarDelete, sidebarEdit);
-        sidebarLi.addEventListener("mouseenter", () => {
-            sidebarLiButtonDiv.classList.remove("hidden");
-        });
-        sidebarLi.addEventListener("mouseleave", () => {
-            sidebarLiButtonDiv.classList.add("hidden");
-        });
+        // sidebarLi.addEventListener("mouseenter", () => {
+        //     sidebarLiButtonDiv.classList.remove("hidden");
+        // });
+        // sidebarLi.addEventListener("mouseleave", () => {
+        //     sidebarLiButtonDiv.classList.add("hidden");
+        // });
 
         const sidebarLiText = document.createElement("div");
         sidebarLiText.classList.add("sidebar-li-text");

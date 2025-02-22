@@ -2,6 +2,7 @@ import PageProjectsManager from "./PageProjectsManager";
 import mainPubSub from "./PubSub";
 import pencilSvg from "../images/pencil.svg";
 import trashSvg from "../images/trash.svg";
+import { differenceInDays, endOfDay, formatDistanceToNow } from "date-fns";
 
 class TodoListModule {
     constructor() {}
@@ -47,10 +48,14 @@ class TodoListModule {
         newCard.classList.add("todo-item-card");
 
         const title = this.createTextDiv(todoItem.title, "todo-item-title");
-        const date = this.createTextDiv(
-            `Due: ${todoItem.date}`,
-            "todo-item-due"
-        );
+
+        const dueDate = endOfDay(todoItem.date);
+        const dateText = formatDistanceToNow(dueDate, {
+            addSuffix: true,
+        });
+        const diffInDays = differenceInDays(dueDate, new Date());
+        const date = this.createTextDiv(`Due: ${dateText}`, "todo-item-due");
+        if (diffInDays < 1) date.classList.add("urgent-date");
 
         const desc = this.createHiddenTextDiv(todoItem.description);
         const prio = this.createHiddenTextDiv(todoItem.priority, [
@@ -93,11 +98,11 @@ class TodoListModule {
             completedTick.classList.add("ticked");
         }
         completedTick.addEventListener("click", () => {
-            const todoItem = PageProjectsManager.getTodoItem(
+            const todoItemClicked = PageProjectsManager.getTodoItem(
                 projectName,
                 todoItem.title
             );
-            todoItem.completed = !todoItem.completed;
+            todoItemClicked.completed = !todoItemClicked.completed;
         });
         wrapper.replaceChildren(completedTick, newCard);
 
